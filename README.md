@@ -1,30 +1,5 @@
 # 🔐 BruteAI – AI Destekli Wordlist Üretici / AI-Powered Wordlist Generator
 
-## 🇹🇷 Türkçe – Türkçe Kılavuz
-
-**BruteAI**, web içeriklerinden yapay zeka yardımıyla hedef odaklı ve etkili wordlist (şifre listesi) oluşturmanızı sağlar.
-
-### 🚀 Özellikler
-- Yapay zeka tabanlı içerik analizi
-- Cloudflare gibi korumaları aşabilen gelişmiş crawler
-- Çoklu dil desteği: Türkçe, İngilizce, Almanca, Fransızca, İspanyolca, Portekizce, Rusça
-- CUDA bellek hatalarına karşı quantization
-- Çapraz platform (Windows/macOS/Linux) uyumlu
-- Otomatik donanım tespiti ve model ayarı
-
-### 🔧 Kurulum
-```
-pip install -r requirements.txt
-````
-
-### 🛠️ Kullanım
-
-```
-python bruteai.py --url "[https://ornek.com](https://ornek.com)" --lang tr --output liste.txt
-```
-
------
-
 ## 🇬🇧 English – English Guide
 
 **BruteAI** is an AI-powered tool that helps you generate targeted and effective wordlists from website content.
@@ -48,6 +23,29 @@ pip install -r requirements.txt
 
 ```
 python bruteai.py --url "[https://example.com](https://example.com)" --lang en --output wordlist.txt
+```
+
+## 🇹🇷 Türkçe – Türkçe Kılavuz
+
+**BruteAI**, web içeriklerinden yapay zeka yardımıyla hedef odaklı ve etkili wordlist (şifre listesi) oluşturmanızı sağlar.
+
+### 🚀 Özellikler
+- Yapay zeka tabanlı içerik analizi
+- Cloudflare gibi korumaları aşabilen gelişmiş crawler
+- Çoklu dil desteği: Türkçe, İngilizce, Almanca, Fransızca, İspanyolca, Portekizce, Rusça
+- CUDA bellek hatalarına karşı quantization
+- Çapraz platform (Windows/macOS/Linux) uyumlu
+- Otomatik donanım tespiti ve model ayarı
+
+### 🔧 Kurulum
+```
+pip install -r requirements.txt
+````
+
+### 🛠️ Kullanım
+
+```
+python bruteai.py --url "[https://ornek.com](https://ornek.com)" --lang tr --output liste.txt
 ```
 
 ## 🇩🇪 Deutsch – Deutsche Anleitung
@@ -74,8 +72,6 @@ pip install -r requirements.txt
 ```
 python bruteai.py --url "[https://beispiel.de](https://beispiel.de)" --lang de --output wortliste.txt
 ```
-
------
 
 ## 🇫🇷 Français – Guide Français
 
