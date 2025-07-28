@@ -8,7 +8,7 @@ Model: deepseek-ai/deepseek-coder-6.7b-instruct
 • Automatic model selection based on system capabilities added.
 • Text is processed in chunks to reduce RAM usage.
 • Prompts for multiple languages added.
-• Advanced crawler integrated to bypass protections like Cloudflare.
+• Advanced crawler integrated using Playwright to bypass protections.
 • Environment cleanup function added.
 • Cross-platform (Windows/macOS/Linux) compatibility ensured.
 • Platform detection and indication of relevant installation steps added.
@@ -16,11 +16,22 @@ Model: deepseek-ai/deepseek-coder-6.7b-instruct
 • Added text cleaning step to improve AI output quality.
 • Model generation parameter warnings resolved.
 • Option to specify a custom model from HuggingFace via command-line argument added.
+• Switched web crawling library from Selenium to Playwright.
+• Added system dependency installation for Playwright on Linux/Colab.
+• Further updated Playwright system dependencies based on error feedback and common requirements.
 """
 
 import requests, logging, io
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin
+# Removed Selenium/WebDriver imports
+# import undetected_chromedriver as uc
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.support import expected_conditions as EC
+# from selenium.common.exceptions import WebDriverException, TimeoutException
+# from webdriver_manager.chrome import ChromeDriverManager
+
 import fitz # PyMuPDF
 import docx # python-docx
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig # Import BitsAndBytesConfig from transformers
@@ -33,34 +44,16 @@ import platform # Import platform to check OS
 import re # Import regex for word count
 import sys # Import sys to access command line arguments
 import argparse # Import argparse for cleaner argument parsing
-# Imports for advanced crawler
-import undetected_chromedriver as uc
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import WebDriverException, TimeoutException
-from webdriver_manager.chrome import ChromeDriverManager # Import ChromeDriverManager
+
+# Add Playwright imports
+from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+
 
 # Colab specific imports for clearing output (optional for this kind of cleanup)
 # from IPython.display import clear_output
-
-
 # --- Installation Information and Conditional Setup (For Colab or Local Use) ---
 
 print(f"Operating System Detected: {platform.system()}")
-# OS-specific installations (Google Chrome for Colab/Linux)
-if platform.system() == "Linux":
-    print("\nLinux platform detected.")
-elif platform.system() == "Windows" or platform.system() == "Darwin": # Darwin is macOS
-    print(f"\n{platform.system()} platform detected.")
-    print("Please ensure Google Chrome browser and Python are installed on your system.")
-    print("ChromeDriver will be automatically downloaded by webdriver-manager.")
-    # apt-get commands are not applicable for Windows/macOS, so they are not run here.
-else:
-    print(f"\nUnknown platform: {platform.system()}. Please manually install Google Chrome browser and all required Python packages.")
-
-print("-" * 20) # Separator
-
 
 # -------------------- SETTINGS --------------------
 # MODEL_NAME = "google/gemma-2b-it" # Changed model to a smaller instruction-tuned model
@@ -124,61 +117,21 @@ def clean_text(text):
     return cleaned
 
 
-# -------------------- CRAWLER --------------------
-# Removed the old crawl_website function
-
-# Advanced Crawler using undetected-chromedriver
+# -------------------- CRAWLER (Playwright) --------------------
+# Rewritten crawl_website_advanced function using Playwright
 def crawl_website_advanced(start_url, max_pages=None, requests_per_second=None, sleep_between_requests=None):
-    print(f"\nStarting Advanced Crawler: {start_url} (limit: {max_pages or '∞'})") # Translated print statement
+    print(f"\nStarting Playwright Crawler: {start_url} (limit: {max_pages or '∞'})") # Translated print statement
 
-    # Use webdriver_manager to get the compatible chromedriver path
-    driver_path = None
-    try:
-        # ChromeDriverManager().install() finds and downloads the correct driver for the installed Chrome and OS
-        driver_path = ChromeDriverManager().install()
-        print(f"ChromeDriver installed/found: {driver_path}") # Translated print statement
-    except Exception as e:
-        print(f"⚠️ ChromeDriver could not be installed/found: {e}. WebDriver-based crawler cannot start.") # Translated print statement
-        print("Please ensure Google Chrome is installed on your system.") # Translated print statement
-        return [] # Return empty list if driver cannot be installed
-
-    # browser_path is usually automatically detected by undetected-chromedriver
-    # but you can explicitly provide it if needed, especially on non-standard setups
-    # On Windows, it might be something like 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
-    # On macOS, it might be '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-    # Rely on uc to find it first.
-    browser_path = None # Set to None to let uc find it
-
-
-    options = uc.ChromeOptions()
-    options.add_argument('--headless') # Don't show the browser UI (Translated comment)
-    # These options are often specific to Linux/Docker/Colab environments,
-    # may not be needed or cause issues on Windows/macOS.
-    # Let's keep them conditional or remove for better cross-platform compatibility.
-    # We'll keep the necessary ones for headless operation.
-    if platform.system() == "Linux":
-        options.add_argument('--no-sandbox') # May be needed for Colab (Translated comment)
-        options.add_argument('--disable-dev-shm-usage') # May be needed for Colab (Translated comment)
-
-    options.add_argument('--disable-gpu') # Disable GPU (for Selenium) (Translated comment)
-    options.add_argument('--window-size=1920,1080') # Set window size (Translated comment)
-    options.add_argument('--disable-extensions')
-    options.add_argument('--dns-prefetch-disable')
-    options.add_argument('--disable-features=VizDisplayCompositor')
-    # Add a common user agent
-    options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36')
-
-
-    driver = None
     text_contents = [] # List to store text of each page
 
-    try:
-        # Launch the browser with undetected_chromedriver (Translated comment)
-        # Pass driver_executable_path and browser_executable_path explicitly
-        driver = uc.Chrome(options=options, driver_executable_path=driver_path, browser_executable_path=browser_path)
+    # Use sync_playwright for synchronous operations
+    # Added context manager for p to ensure it's closed
+    with sync_playwright() as p:
+        # Launch Chromium browser (can choose 'firefox' or 'webkit' as well)
+        # Use headless=True for running without a GUI
+        browser = p.chromium.launch(headless=True)
         print("Browser launched successfully.") # Translated print statement
 
-        # ALLOWED = ('text/html') # Advanced crawler generally only processes HTML (Translated comment)
         visited, queue, count = set(), [start_url], 0
         start_domain = urlparse(start_url).netloc
 
@@ -207,9 +160,10 @@ def crawl_website_advanced(start_url, max_pages=None, requests_per_second=None, 
             if url in visited: continue
 
             # --- Preliminary HEAD request to check content type ---
+            # Keep the HEAD request check as it's faster than launching a browser page
             try:
                 # Use a short timeout for the HEAD request
-                # Use the same user agent as the browser for consistency
+                # Use a common user agent
                 head_response = requests.head(url, timeout=10, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'})
                 head_response.raise_for_status()
                 ctype = head_response.headers.get('content-type', '').lower()
@@ -222,38 +176,35 @@ def crawl_website_advanced(start_url, max_pages=None, requests_per_second=None, 
                      continue # Skip this URL if not HTML/XML or is a known binary type
 
             except requests.RequestException as e:
-                 # HEAD request failed, maybe the server doesn't support HEAD, try GET with Selenium anyway?
+                 # HEAD request failed, maybe the server doesn't support HEAD, try GET with Playwright anyway?
                  # Or maybe the URL is just bad. Let's skip for now to be safe.
                  print(f"  ⚠️ HEAD request error, skipping: {url} ({e})"); # Translated print statement
                  visited.add(url)
                  continue # Skip if HEAD request fails
             # --- End of HEAD request check ---
 
-
+            page = None # Initialize page variable
             try:
+                # Create a new page/tab in the browser
+                page = browser.new_page()
                 print(f"[{count+1}] Loading: {url}") # Translated print statement
-                driver.get(url)
+
+                # Navigate to the URL and wait for the network to be idle (or load state)
+                # Use a longer timeout for page navigation
+                page.goto(url, wait_until="networkidle", timeout=60000) # Increased timeout to 60 seconds
                 request_count += 1 # Increment request count after a successful attempt
 
-                # Wait for the page to load completely (e.g., body tag to be present) (Translated comment)
-                # A longer wait might be needed for Cloudflare or other protections. (Translated comment)
-                WebDriverWait(driver, 45).until( # Increased wait time
-                    EC.presence_of_element_located((By.TAG_NAME, "body"))
-                )
-
-                # Check if Cloudflare or other blocking is active (simple check) (Translated comment)
-                # You can search for blocking indicators in the page title or source. (Translated comment)
-                # Check for common Cloudflare indicators or specific text
-                if "Just a moment..." in driver.title or "Pardon Our Interruption" in driver.page_source or "Enable JavaScript and cookies to continue" in driver.page_source or "DDoS protection by Cloudflare" in driver.page_source:
+                # Check for common Cloudflare indicators or specific text after loading
+                page_source = page.content() # Get the page content (HTML)
+                if "Just a moment..." in page.title() or "Pardon Our Interruption" in page_source or "Enable JavaScript and cookies to continue" in page_source or "DDoS protection by Cloudflare" in page_source:
                      print(f"  ⚠️ Blocking detected, skipping or additional waiting might be needed: {url}") # Translated print statement
                      # More complex waiting or resolution logic could be added here (Translated comment)
                      visited.add(url)
-                     continue # Skip this page or retry (Translated comment)
+                     # page.close() # Close the page - Handled in finally block now
+                     # continue # Skip this page or retry (Translated comment)
 
-                # Get the page source code (Translated comment)
-                page_source = driver.page_source
 
-                # Extract text with BeautifulSoup (Translated comment)
+                # BeautifulSoup for text extraction
                 soup = BeautifulSoup(page_source, 'html.parser')
                 for s in soup(['script', 'style']): s.decompose()
                 page_text = soup.get_text(separator=' ', strip=True)
@@ -271,58 +222,60 @@ def crawl_website_advanced(start_url, max_pages=None, requests_per_second=None, 
                     # Note: Text from pages skipped here is NOT added to text_contents,
                     # effectively excluding it from AI analysis. (Translated comment)
                     visited.add(urlparse(url)._replace(fragment="").geturl()) # Add to visited even if skipped
-                    continue # Skip processing this page for text and links
+                    # page.close() # Close the page - Handled in finally block now
+                    # continue # Skip processing this page for text and links
 
                 if len(cleaned_page_text) < 100: # Also check raw character length after cleaning
                      print(f"  ⚠️ Page text is very short ({len(cleaned_page_text)} characters), likely not a content page. Skipping: {url}") # Translated print statement
                      # Note: Text from pages skipped here is NOT added to text_contents,
                      # effectively excluding it from AI analysis. (Translated comment)
                      visited.add(urlparse(url)._replace(fragment="").geturl()) # Add to visited even if skipped
-                     continue # Skip processing this page for text and links
-
-                # --- End of heuristic check ---
-
+                    #  page.close() # Close the page - Handled in finally block now
+                    #  continue # Skip processing this page for text and links - Handled in finally block now
 
                 if cleaned_page_text: # Append the cleaned text if it passed checks
                      text_contents.append(cleaned_page_text)
 
-                # Extract links and add to queue (Translated comment)
+                # Extract links and add to queue
                 for a in soup.find_all('a', href=True):
                     href = a['href']
-                    # Ignore links that are clearly not web pages (images, files, etc.) based on extension (Translated comment)
+                    # Ignore links that are clearly not web pages (images, files, etc.) based on extension
                     if href.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.css', '.js', '.pdf', '.zip', '.rar', '.tar', '.gz', '.mp4', '.mp3', '.exe', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx')):
                         continue
                     if href.startswith(('#', 'mailto:', 'tel:')): continue
                     full = urljoin(start_url, href)
-                    # Clean fragment identifiers for comparison (Translated comment)
+                    # Clean fragment identifiers for comparison
                     full_parsed = urlparse(full)
                     full_clean = full_parsed._replace(fragment="").geturl()
 
-                    # Only add internal links to the queue if not already visited or in queue (Translated comment)
+                    # Only add internal links to the queue if not already visited or in queue
                     # Also check against visited set using the cleaned URL
                     if (urlparse(full_clean).netloc == start_domain and full_clean not in visited and full_clean not in [item.geturl() for item in map(urlparse, queue)]):
                          queue.append(full) # Add original URL with fragment if any
 
 
-            except (WebDriverException, TimeoutException) as e:
-                print(f"  ⚠️ Browser error or timeout: {url} ({e})"); # Translated print statement
+            except PlaywrightTimeoutError as e:
+                print(f"  ⚠️ Playwright timeout error: {url} ({e})"); # Translated print statement
                 visited.add(url)
-                continue
+                # if page: page.close() # Ensure page is closed on error - Handled in finally
+                # continue # Handled in finally
             except Exception as e:
-                print(f"  ⚠️ General error: {url} ({e})"); # Translated print statement
+                print(f"  ⚠️ General error during Playwright page processing: {url} ({e})"); # Translated print statement
                 visited.add(url)
-                continue
+                # if page: page.close() # Ensure page is closed on error - Handled in finally
+                # continue # Handled in finally
+            finally:
+                 if page and not page.is_closed():
+                      page.close() # Close the page after processing
+                 # Add to visited set even if an error occurred during page processing
+                 # This prevents infinite loops on problematic pages
+                 visited.add(urlparse(url)._replace(fragment="").geturl()); # Added this line here
+                 count += 1 # Increment count even on error, if page attempt was made
+                 print(f"  ✅ Attempted processing: {url}") # Changed to attempted processing
 
-            # Add the cleaned URL to visited set after successful processing (even if no text extracted) (Translated comment)
-            # Ensure we add to visited after attempting to process the page, to avoid re-queueing. (Translated comment)
-            visited.add(urlparse(url)._replace(fragment="").geturl()); count += 1
-            print(f"  ✅ Successfully processed: {url}") # Translated print statement
 
-
-    finally:
-        if driver:
-            driver.quit() # Close the browser (Translated comment)
-            print("\nBrowser closed.") # Translated print statement
+        # Browser will be closed automatically by the 'with' statement
+        print("\nBrowser closed.") # Translated print statement
 
 
     return text_contents # Return list of text contents
@@ -373,23 +326,22 @@ def load_model_and_tokenizer(custom_model_name: str = None):
     device = "cuda" if use_gpu else "cpu"
     print(f"Device Used: {device.upper()}") # Translated print statement
 
-
     models_to_try = []
     if custom_model_name:
         print(f"Attempting custom model: '{custom_model_name}'") # Translated print statement
         models_to_try.append(custom_model_name)
 
-    # Add default models if no custom model or if custom model failed (Translated comment)
-    # Only add default models if the custom model is not the same as the first default model (Translated comment)
+    # Add default models if no custom model or if custom model failed
+    # Only add default models if the custom model is not the same as the first default model
     if not custom_model_name or custom_model_name != DEFAULT_MODEL_LIST[0]:
          models_to_try.extend(DEFAULT_MODEL_LIST)
     elif custom_model_name == DEFAULT_MODEL_LIST[0] and len(DEFAULT_MODEL_LIST) > 1:
-        # If custom model is the first default, still add the rest of the default list (Translated comment)
+        # If custom model is the first default, still add the rest of the default list
         models_to_try.extend(DEFAULT_MODEL_LIST[1:])
 
 
     for model_name in models_to_try:
-        # Avoid trying the same model name twice if it was explicitly added as custom (Translated comment)
+        # Avoid trying the same model name twice if it was explicitly added as custom
         if model_name == selected_model_name:
              continue
 
@@ -469,6 +421,7 @@ def load_model_and_tokenizer(custom_model_name: str = None):
     print("\n❌ Error: None of the models in the list could be loaded. Please try a smaller model or use a runtime with more memory.") # Translated print statement
     selected_model_name = None
     return False # Failed to load any model
+
 
 def detect_language(text: str) -> str:
     try: lang = detect(text); return lang if lang in SUPPORTED_LANGUAGES else "en"
