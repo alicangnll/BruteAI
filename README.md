@@ -1,42 +1,4 @@
-# 🔐 BruteAI – AI Destekli Wordlist Üretici
-
-## 🇹🇷 Türkçe – Türkçe Kılavuz
-
-**BruteAI**, web içeriklerinden yapay zeka yardımıyla hedef odaklı ve etkili wordlist (şifre listesi) oluşturmanızı sağlar.
-
-### 🚀 Özellikler
-
-  - Yapay zeka tabanlı içerik analizi
-  - Cloudflare gibi korumaları aşabilen gelişmiş crawler
-  - **Otomatik dil tespiti** ile doğru analiz
-  - CUDA bellek hatalarına karşı quantization
-  - Çapraz platform (Windows/macOS/Linux) uyumlu
-  - Otomatik donanım tespiti ve model ayarı
-  - **Otomatik dosya isimlendirme** (ör: `ornek.com_username_wordlist.txt`)
-
-### 🔧 Kurulum
-
-Gerekli kütüphaneleri yüklemek için projenin ana dizininde aşağıdaki komutu çalıştırın:
-
-```bash
-pip install -r requirements.txt
-```
-
-### 🛠️ Kullanım
-
-Aracı terminal üzerinden, hedef site adresini doğrudan yazarak çalıştırabilirsiniz.
-
-```bash
-python bruteai.py "https://ornek.com" --max-pages 10
-```
-
-**Parametreler:**
-| Parametre | Açıklama | Tür | Varsayılan |
-| :--- | :--- | :--- | :--- |
-| `url` | **(Zorunlu)** Taranacak web sitesinin tam adresi. | metin | Yok |
-| `--max-pages` | *(İsteğe Bağlı)* Taranacak maksimum sayfa sayısı. | sayı | `50` |
-| `--snippet-length` | *(İsteğe Bağlı)* AI'a gönderilecek metin parçası uzunluğu. | sayı | `15000`|
-| `--max-gen-tokens`| *(İsteğe Bağlı)* AI'ın üreteceği maksimum kelime sayısı. | sayı | `512` |
+# 🔐 BruteAI – AI-powered Wordlist Generator
 
 ## 🇬🇧 English – English Guide
 
@@ -75,6 +37,45 @@ python bruteai.py "https://example.com" --max-pages 10
 | `--max-pages` | *(Optional)* Maximum number of pages to crawl. | integer | `50` |
 | `--snippet-length` | *(Optional)* Length of the text snippet sent to the AI. | integer | `15000` |
 | `--max-gen-tokens`| *(Optional)* Maximum number of tokens for the AI to generate. | integer | `512` |
+
+
+## 🇹🇷 Türkçe – Türkçe Kılavuz
+
+**BruteAI**, web içeriklerinden yapay zeka yardımıyla hedef odaklı ve etkili wordlist (şifre listesi) oluşturmanızı sağlar.
+
+### 🚀 Özellikler
+
+  - Yapay zeka tabanlı içerik analizi
+  - Cloudflare gibi korumaları aşabilen gelişmiş crawler
+  - **Otomatik dil tespiti** ile doğru analiz
+  - CUDA bellek hatalarına karşı quantization
+  - Çapraz platform (Windows/macOS/Linux) uyumlu
+  - Otomatik donanım tespiti ve model ayarı
+  - **Otomatik dosya isimlendirme** (ör: `ornek.com_username_wordlist.txt`)
+
+### 🔧 Kurulum
+
+Gerekli kütüphaneleri yüklemek için projenin ana dizininde aşağıdaki komutu çalıştırın:
+
+```bash
+pip install -r requirements.txt
+```
+
+### 🛠️ Kullanım
+
+Aracı terminal üzerinden, hedef site adresini doğrudan yazarak çalıştırabilirsiniz.
+
+```bash
+python bruteai.py "https://ornek.com" --max-pages 10
+```
+
+**Parametreler:**
+| Parametre | Açıklama | Tür | Varsayılan |
+| :--- | :--- | :--- | :--- |
+| `url` | **(Zorunlu)** Taranacak web sitesinin tam adresi. | metin | Yok |
+| `--max-pages` | *(İsteğe Bağlı)* Taranacak maksimum sayfa sayısı. | sayı | `50` |
+| `--snippet-length` | *(İsteğe Bağlı)* AI'a gönderilecek metin parçası uzunluğu. | sayı | `15000`|
+| `--max-gen-tokens`| *(İsteğe Bağlı)* AI'ın üreteceği maksimum kelime sayısı. | sayı | `512` |
 
 ## 🇩🇪 Deutsch – Deutsche Anleitung
 
