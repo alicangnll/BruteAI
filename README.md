@@ -1,6 +1,6 @@
 # 🔐 BruteAI – AI-powered Wordlist Generator
 
-## 🇬🇧 English – English Guide
+## 🇬🇧 English Guide
 
 **BruteAI** is an AI-powered tool that helps you generate targeted and effective wordlists from website content. It intelligently crawls a target website, analyzes its content using large language models, and extracts potential usernames and passwords.
 
@@ -55,7 +55,7 @@ python bruteai.py "https://target-site.com" --max-pages 20 --custom-model-name "
 | `--max-gen-tokens`| *(Optional)* Maximum number of tokens for the AI to generate. | integer | `512` |
 | `--custom-model-name`| *(Optional)* Custom model name from Hugging Face. | string | `None` |
 
-## 🇹🇷 Türkçe – Türkçe Kılavuz
+## 🇹🇷 Türkçe Kılavuz
 
 **BruteAI**, web içeriklerinden yapay zeka yardımıyla hedef odaklı ve etkili wordlist (şifre listesi) oluşturmanızı sağlar. Hedef web sitesini akıllıca tarar, içeriğini büyük dil modelleri kullanarak analiz eder ve potansiyel kullanıcı adı ve parolaları çıkarır.
 
@@ -110,7 +110,7 @@ python bruteai.py "https://hedef-site.com" --max-pages 20 --custom-model-name "d
 | `--max-gen-tokens`| *(İsteğe Bağlı)* AI'ın üreteceği maksimum token sayısı. | sayı | `512` |
 | `--custom-model-name`| *(İsteğe Bağlı)* Hugging Face'den özel model adı. | metin | `Yok` |
 
-## 🇩🇪 Deutsch – Deutsche Anleitung
+## 🇩🇪 Deutsche Anleitung
 
 **BruteAI** ist ein KI-gestütztes Tool, das Ihnen hilft, gezielte und effektive Wordlists aus Webseiteninhalten zu erstellen. Es durchsucht intelligent eine Ziel-Website, analysiert deren Inhalt mithilfe großer Sprachmodelle und extrahiert potenzielle Benutzernamen und Passwörter.
 
@@ -165,7 +165,7 @@ python bruteai.py "https://ziel-seite.de" --max-pages 20 --custom-model-name "de
 | `--max-gen-tokens`| *(Optional)* Maximale Anzahl der von der KI zu generierenden Tokens. | Ganzzahl | `512` |
 | `--custom-model-name`| *(Optional)* Benutzerdefinierter Modellname von Hugging Face.| Zeichenkette | `Keine` |
 
-## 🇫🇷 Français – Guide Français
+## 🇫🇷 Guide Français
 
 **BruteAI** est un outil basé sur l’IA qui vous aide à générer des wordlists ciblées et efficaces à partir du contenu de sites web. Il explore intelligemment un site web cible, analyse son contenu à l'aide de grands modèles de langage et en extrait des noms d'utilisateur et des mots de passe potentiels.
 
@@ -220,7 +220,7 @@ python bruteai.py "https://site-cible.fr" --max-pages 20 --custom-model-name "de
 | `--max-gen-tokens`| *(Optionnel)* Nombre maximum de tokens à générer par l'IA. | entier | `512` |
 | `--custom-model-name`| *(Optionnel)* Nom du modèle personnalisé de Hugging Face.| chaîne | `Aucun` |
 
-## 🇪🇸 Español – Guía en Español
+## 🇪🇸 Guía en Español
 
 **BruteAI** es una herramienta de IA que le ayuda a generar listas de palabras específicas y eficaces a partir del contenido de un sitio web. Rastrea de forma inteligente un sitio web de destino, analiza su contenido mediante grandes modelos lingüísticos y extrae posibles nombres de usuario y contraseñas.
 
@@ -275,7 +275,7 @@ python bruteai.py "https://sitio-objetivo.es" --max-pages 20 --custom-model-name
 | `--max-gen-tokens`| *(Opcional)* Número máximo de tokens que generará la IA. | número | `512` |
 | `--custom-model-name`| *(Opcional)* Nombre del modelo personalizado de Hugging Face.| texto | `Ninguno` |
 
-## 🇵🇹 Português – Guia em Português
+## 🇵🇹 Guia em Português
 
 **BruteAI** é uma ferramenta de IA que o ajuda a gerar listas de palavras direcionadas e eficazes a partir do conteúdo de websites. Ele rastreia de forma inteligente um site alvo, analisa seu conteúdo usando grandes modelos de linguagem e extrai potenciais nomes de usuário e senhas.
 
@@ -330,7 +330,7 @@ python bruteai.py "https://site-alvo.pt" --max-pages 20 --custom-model-name "dee
 | `--max-gen-tokens`| *(Opcional)* Número máximo de tokens a serem gerados pela IA. | número | `512` |
 | `--custom-model-name`| *(Opcional)* Nome do modelo personalizado do Hugging Face.| texto | `Nenhum` |
 
-## 🇷🇺 Русский – Русское руководство
+## 🇷🇺 Русское руководство
 
 **BruteAI** — это инструмент на базе ИИ, который помогает создавать целевые и эффективные словари из веб-контента. Он интеллектуально сканирует целевой веб-сайт, анализирует его содержимое с помощью больших языковых моделей и извлекает потенциальные имена пользователей и пароли.
 
