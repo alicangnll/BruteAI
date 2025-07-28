@@ -1,4 +1,4 @@
-# 🔐 BruteAI – AI Destekli Wordlist Üretici
+# 🔐 BruteAI – AI-powered Wordlist Generator
 
 ## 🇬🇧 English – English Guide
 
